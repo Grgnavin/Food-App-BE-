@@ -3,6 +3,8 @@ import { User } from "../models/userModel";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 import cloudinary from "../utils/cloudinary";
+import { generateVerificationCode } from "../utils/generateVerificationcode";
+import { generateToken } from "../utils/generateToken";
 
 export const signup = async (req: Request, res: Response) => {
     try {
@@ -19,7 +21,7 @@ export const signup = async (req: Request, res: Response) => {
 
         const hashedPass = await bcrypt.hash(password, 10);
 
-        const verificationToken = "token" // generateVerification();
+        const verificationToken = generateVerificationCode();
 
         user = await User.create({
             fullname,
@@ -30,9 +32,11 @@ export const signup = async (req: Request, res: Response) => {
             verificationTokenExpiresAt: Date.now() + 24*60*60*1000,
         })
 
-        // generateToken(req, user);
+        generateToken(res, user);
         const userWithoutPass = await User.findById( user._id ).select("-password");
+        
         // await sendVerificationEmail(email, verificationToken);
+
         return res.status(200).json({
             success: true,
             message: "Account created Successfully",
