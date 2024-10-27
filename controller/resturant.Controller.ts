@@ -6,7 +6,7 @@ import { Order } from "../models/orderModel";
 
 export const createResturant = async (req:Request, res: Response): Promise<void> => {
     try {
-        const { resturantName, city, country, price, deliveryTime, cuisines } = req.body;
+        const { resturantName, city, country, deliveryTime, cuisines } = req.body;
         const file = req.file;
         const resturant = await Resturant.findOne({ user:req?.id });
 
@@ -49,7 +49,7 @@ export const createResturant = async (req:Request, res: Response): Promise<void>
     }
 }
 
-export const getResturant = async (req:Request, res: Response) => {
+export const getResturant = async (req:Request, res: Response): Promise<void> => {
     try {
         const resturant = await Resturant.find({user: req.id});
         if (!resturant) {
@@ -59,7 +59,7 @@ export const getResturant = async (req:Request, res: Response) => {
             });
             return;
         }
-        return res.status(200).json({
+        res.status(200).json({
             success: true,
             resturant
         })
@@ -71,7 +71,7 @@ export const getResturant = async (req:Request, res: Response) => {
     }
 };
 
-export const updateesturant = async (req:Request, res: Response) => {
+export const updateResturant = async (req:Request, res: Response) => {
     try {
         const { resturantName, city, country, deliveryTime, cuisines } = req.body;
         const file = req.file;
@@ -130,7 +130,7 @@ export const getResturantOrder = async (req:Request, res: Response): Promise<voi
     }
 }
 
-export const updateOrderStatus = async (req:Request, res: Response) => {
+export const updateOrderStatus = async (req:Request, res: Response):Promise<void> => {
     try {
         const { orderId } = req.params;
         const { status } = req.body;
@@ -157,7 +157,7 @@ export const updateOrderStatus = async (req:Request, res: Response) => {
 }
 
 
-export const searchResturant = async (req:Request, res: Response) => {
+export const searchResturant = async (req:Request, res: Response): Promise<void> => {
     try {
         const searchText = req.params.searchText || "";
         const searchQuery = req.query.searchQuery as string || "";
@@ -196,6 +196,33 @@ export const searchResturant = async (req:Request, res: Response) => {
         res.status(200).json({
             success: false,
             data: resturants
+        })
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            message: "Internal server error"
+        });
+    }
+}
+
+export const getSingleResturant = async (req:Request, res: Response): Promise<void> => {
+    try {
+        const resturantId  = req.params.id;
+        const resturant = await Resturant.findById(resturantId).populate({
+            path: 'menus',
+            options: { createdAt: -1 }
+        });
+        if (!resturant) {
+            res.status(404).json({
+                success: false,
+                message: "Resturant not found"
+            });
+            return;
+        }
+
+        res.status(200).json({
+            resturant,
+            message: "Here is the resturant details"
         })
     } catch (error) {
         console.log(error);
