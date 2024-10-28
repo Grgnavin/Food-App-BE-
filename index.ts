@@ -6,6 +6,8 @@ import cookieParser from "cookie-parser";
 import cors from "cors"; 
 import userRoute from "./routes/user.route";
 import resturantRoute from "./routes/resturant.route";
+import menuRoute from "./routes/menu.route";
+import orderRoute from "./routes/order.route";
 
 dotenv.config();
 const app = express();
@@ -24,11 +26,13 @@ const CorsOptions = {
 };
 app.use(cors(CorsOptions));
 
-//api
+//apis
 app.use("/api/v1/user", userRoute);
 app.use("/api/v1/resturant", resturantRoute);
+app.use("/api/v1/menu", menuRoute);
+app.use("/api/v1/order", orderRoute);
 
 app.listen(PORT, () => {
     connectDB();
-    console.log(`Server listen at port ${PORT}`);
+    console.log(`Server listening at port ${PORT}`);
 })
