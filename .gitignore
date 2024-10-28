@@ -117,4 +117,8 @@ dist
 .yarn/install-state.gz
 .pnp.*
 
+#business logic file
+controller/order.controller.ts
+
+
 # End of https://mrkandreev.name/snippets/gitignore-generator/#Node
