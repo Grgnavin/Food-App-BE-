@@ -69,7 +69,7 @@ export const Login = async (req: Request, res: Response): Promise<void> => {
         if (!isPasswordCorrect) {
             res.status(400).json({
                 success: false,
-                message: "Invcorrect Password"
+                message: "Incorrect Password"
             });
             return;
         }
@@ -97,6 +97,8 @@ export const Login = async (req: Request, res: Response): Promise<void> => {
 export const verifyEmail = async (req:Request, res: Response):  Promise<void> => {
     try {
         const { verificationCode } = req.body;
+        console.log(verificationCode);
+        
         const user = await User.findOne({ 
             verificationToken: verificationCode, verificationTokenExpiresAt: { $gt: Date.now() 
             } }).select("-password");
@@ -117,7 +119,7 @@ export const verifyEmail = async (req:Request, res: Response):  Promise<void> =>
         await sendWelcomeEmail(user.email, user.fullname);
 
         res.status(200).json({
-            success: false,
+            success: true,
             message: "Email has been verified successfully",
             user
         });

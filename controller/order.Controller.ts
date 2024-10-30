@@ -2,8 +2,11 @@ import { Request, Response } from "express";
 import { Resturant } from "../models/resturantModel";
 import { Order } from "../models/orderModel";
 import Stripe from "stripe";
+import dotenv from "dotenv";
 
-const stripe = new Stripe(process.env.STRIPE_PUBLISHABLE_KEY!);
+dotenv.config();
+
+const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
 
 type CheckoutSessionRequest = {
     cartItems: {
@@ -60,7 +63,7 @@ export const createCheckoutSession = async (req:Request, res: Response): Promise
             });
             return;
         }
-        const order = new Order({
+        const order: any = new Order({
             resturant: resturant._id,
             user: req.id,
             deliveryDetails: checkOutSessionRequest.deliveryDetails,
