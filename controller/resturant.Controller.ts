@@ -9,8 +9,10 @@ export const createResturant = async (req:Request, res: Response): Promise<void>
         const { resturantName, city, country, deliveryTime, cuisines } = req.body;
         const file = req.file;
         const resturant = await Resturant.findOne({ user:req?.id });
-
-        if (!resturant) {
+        console.log(req.body);
+        console.log(resturantName, city, country);
+        
+        if (resturant) {
             res.status(400).json({
                 success: false,
                 message: "Resturant already exixts for this user"
@@ -20,7 +22,7 @@ export const createResturant = async (req:Request, res: Response): Promise<void>
         if (!file) {
             res.status(400).json({
                 success: false,
-                message: "Image required"
+                message: "Image is required"
             });
             return;
         }
@@ -195,7 +197,7 @@ export const searchResturant = async (req:Request, res: Response): Promise<void>
         const resturants = await Resturant.find(query);
         res.status(200).json({
             success: false,
-            data: resturants
+            resturants
         })
     } catch (error) {
         console.log(error);
