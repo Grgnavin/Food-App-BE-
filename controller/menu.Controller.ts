@@ -64,7 +64,7 @@ export const editMenu = async (req:Request, res: Response): Promise<void> => {
         }
         res.status(200).json({
             success: true,
-            messsage: "Menu has been updated",
+            messsage: "Menu has been updated successfully",
             menu
         })
     } catch (error) {

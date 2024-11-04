@@ -9,8 +9,6 @@ export const createResturant = async (req:Request, res: Response): Promise<void>
         const { resturantName, city, country, deliveryTime, cuisines } = req.body;
         const file = req.file;
         const resturant = await Resturant.findOne({ user:req?.id });
-        console.log(req.body);
-        console.log(resturantName, city, country);
         
         if (resturant) {
             res.status(400).json({
@@ -51,12 +49,15 @@ export const createResturant = async (req:Request, res: Response): Promise<void>
     }
 }
 
+
+
 export const getResturant = async (req:Request, res: Response): Promise<void> => {
     try {
-        const resturant = await Resturant.find({user: req.id});
+        const resturant = await Resturant.findOne({user: req.id}).populate('menus');
         if (!resturant) {
             res.status(400).json({
                 success: false,
+                resturant: [],
                 message: "Resturant not found"
             });
             return;
@@ -64,7 +65,7 @@ export const getResturant = async (req:Request, res: Response): Promise<void> =>
         res.status(200).json({
             success: true,
             resturant
-        })
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
@@ -100,7 +101,7 @@ export const updateResturant = async (req:Request, res: Response) => {
             success: true,
             message: "Resturant updated",
             resturant
-        })
+        });
     } catch (error) {
         console.log(error);
         res.status(500).json({
