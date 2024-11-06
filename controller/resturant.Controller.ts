@@ -50,7 +50,6 @@ export const createResturant = async (req:Request, res: Response): Promise<void>
 }
 
 
-
 export const getResturant = async (req:Request, res: Response): Promise<void> => {
     try {
         const resturant = await Resturant.findOne({user: req.id}).populate('menus');
@@ -159,12 +158,17 @@ export const updateOrderStatus = async (req:Request, res: Response):Promise<void
     }
 }
 
+// Utility function to escape special characters in a regular expression
+const escapeRegExp = (string: string) => {
+    return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+};
 
 export const searchResturant = async (req:Request, res: Response): Promise<void> => {
     try {
         const searchText = req.params.searchText || "";
         const searchQuery = req.query.searchQuery as string || "";
         const selectedCuisines = (req.query.searchQuery as string || "").split(",").filter(x=>x);
+        
         const query: any = {}; 
         //basic search based on searchText
         if (searchText) {
@@ -197,8 +201,9 @@ export const searchResturant = async (req:Request, res: Response): Promise<void>
         }
         const resturants = await Resturant.find(query);
         res.status(200).json({
-            success: false,
-            resturants
+            success: true,
+            resturants,
+            message: resturants.length > 0 ? "Here are all the resturants" : "No resturant found"
         })
     } catch (error) {
         console.log(error);
