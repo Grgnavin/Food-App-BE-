@@ -203,7 +203,6 @@ export const searchResturant = async (req:Request, res: Response): Promise<void>
         res.status(200).json({
             success: true,
             resturants,
-            message: resturants.length > 0 ? "Here are all the resturants" : "No resturant found"
         })
     } catch (error) {
         console.log(error);
@@ -230,6 +229,7 @@ export const getSingleResturant = async (req:Request, res: Response): Promise<vo
 
         res.status(200).json({
             resturant,
+            success: true,
             message: "Here is the resturant details"
         })
     } catch (error) {
