@@ -34,16 +34,19 @@ type MenuItems= {
 }
 
 export const createLineItems = (checkOutSessionRequest: CheckoutSessionRequest, menuItems: any) => {
+    if (!Array.isArray(checkOutSessionRequest.cartItems)) {
+        throw new Error("Cartitems is not an array")
+    }
     //create lineitems
     const lineitems = checkOutSessionRequest.cartItems.map((x) => {
-        const menuItem = menuItems.find((y:any) => y._id === x.menuId);
+        const menuItem = menuItems.find((y:any) => y._id.toString() === x.menuId);
         if (!menuItem) throw new Error('Menu item with id not found');
         return {
             price_data : {
                 currency: 'npr',
                 product_data: {
                     name: menuItem.name,
-                    image: [menuItem.image],
+                    images: [menuItem.image],
                 },
                 unit_amount: menuItem.price * 100
             },
@@ -56,7 +59,7 @@ export const createLineItems = (checkOutSessionRequest: CheckoutSessionRequest, 
 export const createCheckoutSession = async (req:Request, res: Response): Promise<any> => {
     try {
         const checkOutSessionRequest: CheckoutSessionRequest = req.body;
-        const resturant= await Resturant.findById(checkOutSessionRequest.resturantId).populate('menu');
+        const resturant= await Resturant.findById(checkOutSessionRequest.resturantId).populate('menus');
         if (!resturant) {
             res.status(400).json({
                 message: "Resturant not found"
@@ -74,6 +77,7 @@ export const createCheckoutSession = async (req:Request, res: Response): Promise
         //line items
         const menuitems = resturant.menus;
         const lineitems = createLineItems(checkOutSessionRequest, menuitems);
+        const orderID = order._id.toString();
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
             shipping_address_collection: {
@@ -84,7 +88,7 @@ export const createCheckoutSession = async (req:Request, res: Response): Promise
             success_url: `${process.env.FRONTEND_URL}/order/status`,
             cancel_url: `${process.env.FRONTEND_URL}/cart`,
             metadata: {
-                orderId: order._id.toSring(),
+                orderId: orderID,
                 image: JSON.stringify(menuitems.map((x:any) => x.image)) 
             }
         })
@@ -99,6 +103,7 @@ export const createCheckoutSession = async (req:Request, res: Response): Promise
         await order.save();
         res.status(200).json({
             session,
+            
             success: true
         })
     } catch (error) {
