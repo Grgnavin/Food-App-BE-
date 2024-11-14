@@ -148,6 +148,7 @@ export const updateOrderStatus = async (req:Request, res: Response):Promise<void
         await order.save();
         res.status(200).json({
             success: true,
+            status: order.status,
             message: "Status Updated"
         })
     } catch (error) {
