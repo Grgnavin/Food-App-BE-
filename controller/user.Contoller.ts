@@ -244,6 +244,8 @@ export const updateProfile = async (req:Request, res: Response): Promise<void> =
     try {
         const userId = req.id;
         const { fullname, email, address, city, country, profilePicture } = req.body;
+        console.log("ProfilePicture",req.body.profilePicture);
+        
         //upload image on cloudinary
         let cloudResponse:any;
         
