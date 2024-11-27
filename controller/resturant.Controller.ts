@@ -196,7 +196,6 @@ export const searchResturant = async (req:Request, res: Response): Promise<void>
                 }
             ]
         }
-        // console.log(query);
         if (selectedCuisines.length>0) {
             query.cuisines = { $in: selectedCuisines }
         }
